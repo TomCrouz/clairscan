@@ -2,6 +2,8 @@
 
 Scanner de documents installable (PWA), sans publicité, sans compte, sans envoi de données : tout reste sur l'appareil.
 
+**En ligne : https://tomcrouz.github.io/clairscan/**
+
 ## Fonctions
 
 - **Scan** depuis l'appareil photo ou import de plusieurs images de la galerie.
