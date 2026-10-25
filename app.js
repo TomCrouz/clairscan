@@ -2,7 +2,7 @@
 
 const MAX_SRC = 2600;  // côté max de la photo d'origine conservée
 const MAX_OUT = 2480;  // côté max d'une page (≈ A4 à 300 dpi)
-const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+const JSPDF_URL = 'lib/jspdf-4.2.1.umd.min.js';
 const FILTERS = [
   { id: 'enhance', label: 'Magique' },
   { id: 'original', label: 'Original' },
@@ -19,7 +19,11 @@ const urls = { home: [], doc: [] };
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+// Laisse le navigateur afficher l'écran d'attente ; le délai de secours couvre un onglet qui ne dessine pas.
+const nextFrame = () => new Promise(r => {
+  requestAnimationFrame(() => setTimeout(r, 0));
+  setTimeout(r, 100);
+});
 const escapeHtml = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 function pref(key, value) {
@@ -68,9 +72,13 @@ function toBlob(canvas, type, quality) {
 async function loadImage(blob, maxSide) {
   const url = URL.createObjectURL(blob);
   try {
+    // Événement load plutôt que img.decode(), qui peut ne jamais aboutir sur un onglet en arrière-plan.
     const img = new Image();
-    img.src = url;
-    await img.decode();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Image illisible'));
+      img.src = url;
+    });
     const s = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
     const c = Scanner.createCanvas(Math.round(img.naturalWidth * s), Math.round(img.naturalHeight * s));
     const ctx = c.getContext('2d', { willReadFrequently: true });
@@ -563,7 +571,7 @@ async function makePdf() {
     makeBtn.hidden = true;
   } catch (err) {
     console.error(err);
-    status.textContent = 'La création du PDF a échoué. Vérifiez la connexion au premier usage.';
+    status.textContent = 'La création du PDF a échoué.';
   } finally {
     makeBtn.disabled = false;
   }

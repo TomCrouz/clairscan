@@ -23,11 +23,20 @@ Scanner de documents installable (PWA), sans publicité, sans compte, sans envoi
 | `scanner.js` | Détection des bords, redressement, filtres |
 | `db.js` | Stockage local |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Installation et mode hors ligne |
+| `lib/` | Bibliothèques intégrées : OpenCV.js 4.12.0 (`@techstark/opencv-js`, Apache 2.0) et jsPDF 4.2.1 (MIT) |
+
+## Sécurité et confidentialité
+
+- Aucune donnée ne quitte l'appareil : pas de compte, pas de synchronisation, pas de statistiques, pas de cookies.
+- Toutes les ressources sont servies par le site lui-même : aucun CDN, aucun service tiers.
+- Les bibliothèques de `lib/` viennent des paquets npm officiels, dont l'empreinte SHA-512 a été vérifiée.
+- Une politique de sécurité (CSP, dans `index.html`) interdit à la page de charger ou d'envoyer quoi que ce soit vers un autre site. `'unsafe-eval'` y est autorisé car OpenCV.js en a besoin.
+- Pour mettre à jour une bibliothèque : `npm pack <paquet>@<version>`, copier le fichier dans `lib/` sous un nom versionné, puis changer le nom dans `scanner.js` ou `app.js` et dans `sw.js`.
 
 ## Essayer sur le PC
 
 ```bash
-python -m http.server 8765
+python -m http.server 8765 --bind 127.0.0.1
 ```
 
 Puis ouvrir http://localhost:8765.
@@ -39,4 +48,4 @@ L'appareil photo et l'installation exigent une adresse **HTTPS**. Le plus simple
 - **Android (Chrome)** : menu ⋮ → *Ajouter à l'écran d'accueil*.
 - **iPhone (Safari)** : bouton Partager → *Sur l'écran d'accueil*.
 
-Le moteur de détection (≈ 10 Mo) est téléchargé une seule fois puis gardé en cache.
+Le moteur de détection (≈ 11 Mo) est téléchargé une seule fois puis gardé en cache.

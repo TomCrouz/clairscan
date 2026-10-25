@@ -2,6 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
+  <!-- Aucune ressource extérieure, aucune requête réseau vers un autre site.
+       'unsafe-eval' : exigé par OpenCV.js (embind génère ses fonctions avec new Function). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2563eb">
   <meta name="description" content="Scanner de documents sans publicité, qui fonctionne hors ligne.">
@@ -14,7 +18,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <svg class="sprite" aria-hidden="true">
     <defs>
       <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
       <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>

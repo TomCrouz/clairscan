@@ -1,7 +1,7 @@
 'use strict';
 /* Traitement d'image : détection des bords, redressement de perspective, filtres. */
 const Scanner = (() => {
-  const OPENCV_URL = 'https://cdn.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.js';
+  const OPENCV_URL = 'lib/opencv-4.12.0.js';
   let cvPromise = null;
   let cvReady = false;
 
