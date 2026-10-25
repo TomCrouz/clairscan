@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Scanner de documents sans publicité, qui fonctionne hors ligne.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ClairScan">
+  <title>ClairScan</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/></symbol>
+      <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h4"/></symbol>
+      <symbol id="i-rotl" viewBox="0 0 24 24"><path d="M3 4v6h6"/><path d="M3.5 10A8.5 8.5 0 1 1 6 17"/></symbol>
+      <symbol id="i-rotr" viewBox="0 0 24 24"><path d="M21 4v6h-6"/><path d="M20.5 10A8.5 8.5 0 1 0 18 17"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+      <symbol id="i-left" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></symbol>
+      <symbol id="i-right" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></symbol>
+      <symbol id="i-auto" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/><path d="M9 12h6M12 9v6"/></symbol>
+      <symbol id="i-full" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v8h14v-8"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 20h14"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- Accueil -->
+  <section id="view-home" class="view active">
+    <header class="bar">
+      <h1 class="brand"><span class="logo"></span>ClairScan</h1>
+    </header>
+    <div class="content">
+      <div id="doc-list" class="grid"></div>
+      <div id="home-empty" class="empty" hidden>
+        <div class="empty-art"></div>
+        <h2>Aucun document</h2>
+        <p>Photographiez une feuille : les bords sont détectés, la page est redressée et nettoyée. Tout reste sur votre appareil.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button id="btn-new-gallery" class="btn"><svg><use href="#i-image"/></svg>Importer</button>
+      <button id="btn-new-camera" class="btn primary grow"><svg><use href="#i-camera"/></svg>Scanner</button>
+    </div>
+  </section>
+
+  <!-- Recadrage -->
+  <section id="view-crop" class="view dark">
+    <header class="bar">
+      <button id="btn-crop-back" class="icon-btn" aria-label="Ignorer cette photo"><svg><use href="#i-back"/></svg></button>
+      <h2>Recadrer</h2>
+      <span id="crop-counter" class="counter"></span>
+    </header>
+    <div id="crop-stage" class="stage">
+      <canvas id="crop-canvas"></canvas>
+      <svg id="crop-overlay" class="overlay"></svg>
+      <canvas id="loupe" class="loupe"></canvas>
+    </div>
+    <p class="hint">Faites glisser les coins pour ajuster le cadre.</p>
+    <div class="toolbar">
+      <button id="btn-crop-auto" class="btn"><svg><use href="#i-auto"/></svg>Auto</button>
+      <button id="btn-crop-full" class="btn"><svg><use href="#i-full"/></svg>Tout</button>
+      <button id="btn-crop-next" class="btn primary grow">Suivant<svg><use href="#i-right"/></svg></button>
+    </div>
+  </section>
+
+  <!-- Filtres -->
+  <section id="view-filter" class="view dark">
+    <header class="bar">
+      <button id="btn-filter-back" class="icon-btn" aria-label="Revenir au recadrage"><svg><use href="#i-back"/></svg></button>
+      <h2>Améliorer</h2>
+      <button id="btn-rot-left" class="icon-btn" aria-label="Pivoter à gauche"><svg><use href="#i-rotl"/></svg></button>
+      <button id="btn-rot-right" class="icon-btn" aria-label="Pivoter à droite"><svg><use href="#i-rotr"/></svg></button>
+    </header>
+    <div class="stage">
+      <canvas id="filter-canvas" class="preview"></canvas>
+    </div>
+    <div id="filter-list" class="filters"></div>
+    <div class="toolbar">
+      <button id="btn-filter-ok" class="btn primary grow"><svg><use href="#i-check"/></svg>Valider la page</button>
+    </div>
+  </section>
+
+  <!-- Document -->
+  <section id="view-doc" class="view">
+    <header class="bar">
+      <button id="btn-doc-back" class="icon-btn" aria-label="Retour"><svg><use href="#i-back"/></svg></button>
+      <input id="doc-name" class="title-input" aria-label="Nom du document" maxlength="80">
+      <button id="btn-doc-delete" class="icon-btn danger" aria-label="Supprimer le document"><svg><use href="#i-trash"/></svg></button>
+    </header>
+    <div class="content">
+      <div id="page-grid" class="grid"></div>
+    </div>
+    <div class="toolbar">
+      <button id="btn-add-camera" class="btn" aria-label="Ajouter une photo"><svg><use href="#i-camera"/></svg>Photo</button>
+      <button id="btn-add-gallery" class="btn" aria-label="Importer des images"><svg><use href="#i-image"/></svg>Importer</button>
+      <button id="btn-export" class="btn primary grow"><svg><use href="#i-pdf"/></svg>PDF</button>
+    </div>
+  </section>
+
+  <dialog id="export-dialog">
+    <form method="dialog">
+      <h3>Exporter en PDF</h3>
+      <div class="field">
+        <span>Format des pages</span>
+        <div class="seg">
+          <label><input type="radio" name="format" value="a4" checked><span>A4</span></label>
+          <label><input type="radio" name="format" value="letter"><span>Lettre</span></label>
+          <label><input type="radio" name="format" value="fit"><span>Ajusté</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span>Taille du fichier</span>
+        <div class="seg">
+          <label><input type="radio" name="size" value="high" checked><span>Haute qualité</span></label>
+          <label><input type="radio" name="size" value="compact"><span>Compact</span></label>
+        </div>
+      </div>
+      <p id="export-status" class="status"></p>
+      <div id="export-ready" class="actions" hidden>
+        <button id="btn-share" type="button" class="btn"><svg><use href="#i-share"/></svg>Partager</button>
+        <button id="btn-download" type="button" class="btn primary"><svg><use href="#i-download"/></svg>Télécharger</button>
+      </div>
+      <div class="actions">
+        <button value="cancel" class="btn">Fermer</button>
+        <button id="btn-make-pdf" type="button" class="btn primary">Créer le PDF</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="busy" class="busy" hidden><div class="spinner"></div><p id="busy-msg"></p></div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <input id="in-camera" type="file" accept="image/*" capture="environment" hidden>
+  <input id="in-gallery" type="file" accept="image/*" multiple hidden>
+
+  <script src="db.js"></script>
+  <script src="scanner.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
